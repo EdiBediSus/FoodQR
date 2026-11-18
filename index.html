@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10251d">
+  <meta name="description" content="FoodQR - descoperă informațiile și recenziile produselor alimentare prin coduri QR.">
+  <title>FoodQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="FoodQR acasă"><span class="brand-mark">F<span>Q</span></span><span>FoodQR</span></a>
+    <div class="top-actions"><span id="userLabel" class="user-label">Neconectat</span><button id="authButton" class="button button-quiet">Conectare</button></div>
+  </header>
+
+  <main class="shell">
+    <section id="homeView" class="view active">
+      <div class="hero">
+        <div class="hero-copy"><span class="eyebrow"><span class="pulse"></span> INFORMAȚII MAI CLARE DESPRE ALIMENTE</span><h1>Scanează. <em>Descoperă.</em><br> Alege informat.</h1><p>Scanează codul QR de pe ambalaj sau creează o pagină pentru un produs alimentar.</p>
+          <div class="hero-buttons"><button class="button button-primary" id="openScanner"><span>▦</span> Scanează un cod</button><button class="button button-light" id="openCreate">＋ Creează un produs</button></div>
+        </div>
+        <div class="hero-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="food-card"><div class="food-emoji">🥑</div><div class="food-card-line"></div><div class="food-card-line short"></div><div class="mini-qr">▦ ▦ ▦<br>▦ ▢ ▦<br>▦ ▦ ▦</div><span class="food-tag">Știi ce alegi</span></div><span class="float float-leaf">✳</span><span class="float float-dot">●</span></div>
+      </div>
+      <section class="section-head"><div><span class="eyebrow dark">COMUNITATEA FOODQR</span><h2>Produse adăugate recent</h2></div><button class="text-button" id="refreshProducts">Reîncarcă ↻</button></section>
+      <div id="productsGrid" class="products-grid"><div class="empty-state"><span class="loader"></span><p>Se încarcă produsele...</p></div></div>
+    </section>
+
+    <section id="scannerView" class="view">
+      <button class="back-button" data-home>← Înapoi</button><div class="page-heading"><span class="eyebrow dark">SCANARE RAPIDĂ</span><h1>Scanează codul QR</h1><p>Îndreaptă camera telefonului spre codul de pe ambalaj.</p></div>
+      <div class="scanner-panel"><div id="reader"></div><div class="scanner-help">Permite accesul la cameră dacă telefonul îl solicită.</div><button class="button button-light full" id="stopScanner">Oprește camera</button></div>
+      <p id="scanMessage" class="notice"></p>
+    </section>
+
+    <section id="createView" class="view">
+      <button class="back-button" data-home>← Înapoi</button><div class="page-heading"><span class="eyebrow dark">ADAUGĂ ÎN COMUNITATE</span><h1>Creează un produs</h1><p>Completează informațiile de pe ambalaj. Orice utilizator conectat poate propune un produs.</p></div>
+      <form id="productForm" class="form-card">
+        <div class="form-grid">
+          <label class="field">Numele alimentului *<input name="name" required maxlength="100" placeholder="Ex. Iaurt natural"></label>
+          <label class="field">Marca / producător<input name="brand" maxlength="100" placeholder="Ex. Marca produsului"></label>
+          <label class="field full-field">Descriere<textarea name="description" rows="3" maxlength="1200" placeholder="Descriere scurtă a produsului"></textarea></label>
+          <label class="field full-field">Ingrediente<textarea name="ingredients" rows="3" maxlength="3000" placeholder="Lista ingredientelor de pe ambalaj"></textarea></label>
+          <label class="field full-field">Alergeni<input name="allergens" maxlength="500" placeholder="Ex. Lapte, gluten, arahide sau nespecificat"></label>
+          <div class="field full-field"><span class="field-title">Valori nutriționale (per 100 g / 100 ml)</span><div class="nutrition-grid">
+            <label>Calorii (kcal)<input name="calories" inputmode="decimal" placeholder="0"></label><label>Grăsimi (g)<input name="fat" inputmode="decimal" placeholder="0"></label><label>Carbohidrați (g)<input name="carbs" inputmode="decimal" placeholder="0"></label><label>Proteine (g)<input name="protein" inputmode="decimal" placeholder="0"></label><label>Fibre (g)<input name="fiber" inputmode="decimal" placeholder="0"></label><label>Sare (g)<input name="salt" inputmode="decimal" placeholder="0"></label>
+          </div></div>
+          <label class="field full-field">Fotografie produs<input name="image" id="productImage" type="file" accept="image/*"><span class="field-hint">Imaginea este opțională. Recomandat: JPG sau PNG, sub 5 MB.</span></label>
+        </div>
+        <label class="check-row"><input type="checkbox" required><span>Confirm că informațiile introduse reflectă ambalajul produsului și înțeleg că pot fi raportate.</span></label>
+        <button class="button button-primary full" type="submit" id="saveProduct">Salvează produsul și generează QR</button><p id="createMessage" class="notice"></p>
+      </form>
+    </section>
+
+    <section id="productView" class="view">
+      <button class="back-button" data-home>← Înapoi la produse</button><div id="productDetails"></div>
+    </section>
+
+    <section id="authView" class="view">
+      <button class="back-button" data-home>← Înapoi</button><div class="auth-card"><div class="brand-mark large">F<span>Q</span></div><span class="eyebrow dark">BINE AI VENIT LA FOODQR</span><h1 id="authTitle">Conectează-te</h1><p>Ai nevoie de un cont pentru a adăuga produse și recenzii.</p>
+        <form id="authForm"><label class="field">Email<input name="email" type="email" required autocomplete="email" placeholder="nume@email.com"></label><label class="field">Parolă<input name="password" type="password" required minlength="6" autocomplete="current-password" placeholder="Minimum 6 caractere"></label><label class="field" id="nameField" hidden>Numele tău<input name="displayName" maxlength="50" placeholder="Cum te numești?"></label><button class="button button-primary full" id="authSubmit">Conectare</button></form><button class="text-button full-text" id="toggleAuth">Nu ai cont? Creează unul</button><p id="authMessage" class="notice"></p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav"><button class="nav-item selected" data-nav="homeView"><span>⌂</span>Acasă</button><button class="nav-item" data-nav="scannerView"><span>▦</span>Scanează</button><button class="nav-item" data-nav="createView"><span>＋</span>Creează</button></nav>
+  <div id="modalLayer" class="modal-layer" hidden><div class="modal-card"><button class="modal-close" id="closeModal" aria-label="Închide">×</button><div id="modalContent"></div></div></div>
+  <div id="toast" class="toast" role="status"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

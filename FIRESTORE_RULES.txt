@@ -1,0 +1,28 @@
+// ATENȚIE: dacă ai deja reguli Firestore pentru alte aplicații în același proiect,
+// NU înlocui tot fișierul. Integrează aceste match-uri în interiorul:
+// match /databases/{database}/documents { ... }
+
+match /foodqr_products/{productId} {
+  allow read: if true;
+  allow create: if request.auth != null
+    && request.resource.data.creatorUid == request.auth.uid
+    && request.resource.data.name is string
+    && request.resource.data.name.size() > 0
+    && request.resource.data.name.size() <= 100;
+  allow update, delete: if request.auth != null
+    && resource.data.creatorUid == request.auth.uid;
+}
+
+match /foodqr_reviews/{reviewId} {
+  allow read: if true;
+  allow create: if request.auth != null
+    && request.resource.data.userId == request.auth.uid
+    && request.resource.data.productId is string
+    && request.resource.data.rating is int
+    && request.resource.data.rating >= 1
+    && request.resource.data.rating <= 5
+    && request.resource.data.comment is string
+    && request.resource.data.comment.size() <= 1000;
+  allow update, delete: if request.auth != null
+    && resource.data.userId == request.auth.uid;
+}
